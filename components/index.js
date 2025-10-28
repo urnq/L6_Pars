@@ -100,3 +100,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         };
+
+        const Components = {
+    Breadcrumbs(currentRoute) {
+        const routes = [
+            { path: '#users', name: 'Пользователи' },
+            { path: '#users#todos', name: 'Задачи' },
+            { path: '#users#posts', name: 'Посты' },
+            { path: '#users#posts#comments', name: 'Комментарии' }
+        ];
+        
+        const breadcrumbsContainer = Utils.createElement('div', { className: 'breadcrumbs' });
+        
+        const homeLink = Utils.createElement('a', { href: '#users' }, ['Главная']);
+        breadcrumbsContainer.appendChild(homeLink);
+        
+        routes.forEach(route => {
+            if (currentRoute.includes(route.path.replace('#', ''))) {
+                const separator = Utils.createElement('span', {}, [' / ']);
+                const link = Utils.createElement('a', { href: route.path }, [route.name]);
+                
+                breadcrumbsContainer.appendChild(separator);
+                breadcrumbsContainer.appendChild(link);
+            }
+        });
+        
+        return breadcrumbsContainer;
+    }
+    //сюда другие компоненты
+}

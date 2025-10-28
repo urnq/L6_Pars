@@ -10,7 +10,7 @@
 
 ### Никитос:
 
-1. [ ] Breadcrumbs
+1. [x] Breadcrumbs
 2. [ ] Header
 3. [ ] Footer
 4. [ ] LoadingState
