@@ -175,7 +175,34 @@ document.addEventListener('DOMContentLoaded', () => {
     
     ErrorState(message) {
         return Utils.createElement('div', { className: 'error' }, [message]);
-    }
+    },
 
+    SearchInput(onSearch) {
+        const debouncedSearch = Utils.debounce(onSearch, 300);
+        
+        return Utils.createElement('div', { className: 'search-container' }, [
+            Utils.createElement('input', {
+                type: 'text',
+                className: 'search-input',
+                placeholder: 'Поиск...',
+                onInput: (e) => debouncedSearch(e.target.value)
+            })
+        ]);
+    },
+
+     AddUserForm(onAddUser) {
+        const form = Utils.createElement('form', { className: 'add-form' });
+        
+        const title = Utils.createElement('h3', {}, ['Добавить пользователя']);
+        
+        const nameGroup = Utils.createElement('div', { className: 'form-group' }, [
+            Utils.createElement('label', { for: 'user-name' }, ['Имя']),
+            Utils.createElement('input', { 
+                type: 'text', 
+                id: 'user-name',
+                required: true 
+            })
+        ]);
+        },
     //сюда другие компоненты
 };
