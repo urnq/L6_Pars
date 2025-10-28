@@ -8,7 +8,7 @@
 5. [ ] CommentList
 6. [ ] class App
 
-### Никитос
+### Никитос:
 
 1. [ ] Breadcrumbs
 2. [ ] Header
@@ -17,3 +17,5 @@
 5. [ ] ErrorState
 6. [ ] SearchInput
 7. [ ] AddUserForm
+8. [x] Utils
+9. [x] Api Sevices
