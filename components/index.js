@@ -1,0 +1,102 @@
+document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('app').innerHTML = '<div class="container">Загрузка...</div>';
+        });
+        const Utils = { 
+            createElement(tag, attributes = {}, children = []) {
+                const element = document.createElement(tag);
+                
+                Object.keys(attributes).forEach(key => {
+                    if (key.startsWith('on') && typeof attributes[key] === 'function') {
+                        const eventName = key.slice(2).toLowerCase();
+                        element.addEventListener(eventName, attributes[key]);
+                    } else {
+                        element.setAttribute(key, attributes[key]);
+                    }
+                });
+                
+                children.forEach(child => {
+                    if (typeof child === 'string') {
+                        element.appendChild(document.createTextNode(child));
+                    } else {
+                        element.appendChild(child);
+                    }
+                });
+                
+                return element;
+            },
+            
+            debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            },
+            
+            getFromStorage(key) {
+                try {
+                    return JSON.parse(localStorage.getItem(key)) || [];
+                } catch (e) {
+                    console.error('Error reading from localStorage', e);
+                    return [];
+                }
+            },
+            
+            saveToStorage(key, data) {
+                try {
+                    localStorage.setItem(key, JSON.stringify(data));
+                } catch (e) {
+                    console.error('Error saving to localStorage', e);
+                }
+            }
+        };
+
+        const ApiService = {
+            async fetchUsers() {
+                try {
+                    const response = await fetch('https://jsonplaceholder.typicode.com/users');
+                    if (!response.ok) throw new Error('Failed to fetch users');
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error fetching users:', error);
+                    return [];
+                }
+            },
+            
+            async fetchTodos() {
+                try {
+                    const response = await fetch('https://jsonplaceholder.typicode.com/todos');
+                    if (!response.ok) throw new Error('Failed to fetch todos');
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error fetching todos:', error);
+                    return [];
+                }
+            },
+            
+            async fetchPosts() {
+                try {
+                    const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+                    if (!response.ok) throw new Error('Failed to fetch posts');
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error fetching posts:', error);
+                    return [];
+                }
+            },
+            
+            async fetchComments() {
+                try {
+                    const response = await fetch('https://jsonplaceholder.typicode.com/comments');
+                    if (!response.ok) throw new Error('Failed to fetch comments');
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error fetching comments:', error);
+                    return [];
+                }
+            }
+        };
