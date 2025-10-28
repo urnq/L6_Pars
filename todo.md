@@ -16,7 +16,7 @@
 3. [x] Footer
 4. [x] LoadingStateg
 5. [x] ErrorState
-6. [] SearchInput
+6. [ ] SearchInput
 7. [ ] AddUserForm
 8. [x] Utils
 9. [x] Api Sevices
