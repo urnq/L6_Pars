@@ -126,6 +126,56 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         return breadcrumbsContainer;
+    },
+
+     Header(currentRoute) {
+        const header = Utils.createElement('header');
+        const container = Utils.createElement('div', { className: 'container header-content' });
+        
+        const logo = Utils.createElement('div', { className: 'logo' }, ['SPA App']);
+        
+        const nav = Utils.createElement('nav');
+        const navList = Utils.createElement('ul');
+        
+        const routes = [
+            { path: '#users', name: 'Пользователи' },
+            { path: '#users#todos', name: 'Задачи' },
+            { path: '#users#posts', name: 'Посты' },
+            { path: '#users#posts#comments', name: 'Комментарии' }
+        ];
+        
+        routes.forEach(route => {
+            const li = Utils.createElement('li');
+            const a = Utils.createElement('a', { 
+                href: route.path,
+                className: currentRoute === route.path ? 'active' : ''
+            }, [route.name]);
+            
+            li.appendChild(a);
+            navList.appendChild(li);
+        });
+        
+        nav.appendChild(navList);
+        container.appendChild(logo);
+        container.appendChild(nav);
+        header.appendChild(container);
+        
+        return header;
+    },
+
+    Footer() {
+        return Utils.createElement('footer', { className: 'container' }, [
+            Utils.createElement('p', {}, ['© 2025 SPA App. Все права защищены.'])
+        ]);
+    },
+
+    LoadingState() {
+        return Utils.createElement('div', { className: 'loading' }, ['Загрузка...']);
+    },
+    
+    ErrorState(message) {
+        return Utils.createElement('div', { className: 'error' }, [message]);
     }
+
     //сюда другие компоненты
-}
+};

@@ -7,15 +7,16 @@
 4. [ ] PostList
 5. [ ] CommentList
 6. [ ] class App
+### я мусорнусь
 
 ### Никитос:
 
 1. [x] Breadcrumbs
-2. [ ] Header
-3. [ ] Footer
-4. [ ] LoadingState
-5. [ ] ErrorState
-6. [ ] SearchInput
+2. [x] Header
+3. [x] Footer
+4. [x] LoadingStateg
+5. [x] ErrorState
+6. [x] SearchInput
 7. [ ] AddUserForm
 8. [x] Utils
 9. [x] Api Sevices
