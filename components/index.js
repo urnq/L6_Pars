@@ -204,5 +204,86 @@ document.addEventListener('DOMContentLoaded', () => {
             })
         ]);
         },
-    //сюда другие компоненты
+
+                    UserList(users, searchQuery, onDeleteUser) {
+                const container = Utils.createElement('div');
+                
+                // Фильтрация пользователей по поисковому запросу
+                const filteredUsers = users.filter(user => 
+                    user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    user.email.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+                
+                if (filteredUsers.length === 0) {
+                    const emptyState = Utils.createElement('div', { className: 'empty-state' }, [
+                        Utils.createElement('h3', {}, ['Пользователи не найдены']),
+                        Utils.createElement('p', {}, ['Попробуйте изменить поисковый запрос'])
+                    ]);
+                    container.appendChild(emptyState);
+                    return container;
+                }
+                
+                filteredUsers.forEach(user => {
+                    const isCustomUser = user.id < 0; // Кастомные пользователи имеют отрицательные ID
+                    
+                    const card = Utils.createElement('div', { className: 'card user-card' }, [
+                        Utils.createElement('h3', {}, [user.name]),
+                        Utils.createElement('p', {}, [user.email]),
+                        Utils.createElement('div', { className: 'meta' }, [
+                            Utils.createElement('p', {}, [`Город: ${user.address?.city || 'Не указан'}`]),
+                            Utils.createElement('p', {}, [`Телефон: ${user.phone || 'Не указан'}`])
+                        ])
+                    ]);
+                    
+                    // Добавляем кнопки действий только для кастомных пользователей
+                    if (isCustomUser) {
+                        const actionButtons = Utils.createElement('div', { className: 'action-buttons' });
+                        const deleteBtn = Utils.createElement('button', { 
+                            className: 'btn btn-danger',
+                            onClick: () => onDeleteUser(user.id)
+                        }, ['Удалить']);
+                        
+                        actionButtons.appendChild(deleteBtn);
+                        card.appendChild(actionButtons);
+                    }
+                    
+                    container.appendChild(card);
+                });
+                
+                return container;
+            },
+            
+            TodoList(todos, searchQuery) {
+                const container = Utils.createElement('div');
+                
+                // Фильтрация задач по поисковому запросу
+                const filteredTodos = todos.filter(todo => 
+                    todo.title.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+                
+                if (filteredTodos.length === 0) {
+                    const emptyState = Utils.createElement('div', { className: 'empty-state' }, [
+                        Utils.createElement('h3', {}, ['Задачи не найдены']),
+                        Utils.createElement('p', {}, ['Попробуйте изменить поисковый запрос'])
+                    ]);
+                    container.appendChild(emptyState);
+                    return container;
+                }
+                
+                filteredTodos.forEach(todo => {
+                    const card = Utils.createElement('div', { className: 'card todo-card' }, [
+                        Utils.createElement('h3', {}, [todo.title]),
+                        Utils.createElement('div', { className: 'meta' }, [
+                            Utils.createElement('p', {}, [
+                                `Статус: ${todo.completed ? 'Выполнено' : 'Не выполнено'}`
+                            ]),
+                            Utils.createElement('p', {}, [`Пользователь ID: ${todo.userId}`])
+                        ])
+                    ]);
+                    
+                    container.appendChild(card);
+                });
+                
+                return container;
+            }
 };
