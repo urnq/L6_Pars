@@ -1,11 +1,11 @@
 
 ### Саня:
 
-1. [ ] стили
-2. [ ] UserList
-3. [ ] TodoList
-4. [ ] PostList
-5. [ ] CommentList
+1. [x] стили
+2. [x] UserList
+3. [x] TodoList
+4. [x] PostList
+5. [x] CommentList
 6. [ ] class App
 ### я мусорнусь
 

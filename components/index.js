@@ -1,12 +1,12 @@
-document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('app').innerHTML = '<div class="container">Загрузка...</div>';
-        });
-        const Utils = { 
+  const Utils = {
+      
             createElement(tag, attributes = {}, children = []) {
                 const element = document.createElement(tag);
                 
+            
                 Object.keys(attributes).forEach(key => {
                     if (key.startsWith('on') && typeof attributes[key] === 'function') {
+                   
                         const eventName = key.slice(2).toLowerCase();
                         element.addEventListener(eventName, attributes[key]);
                     } else {
@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
                 
+          
                 children.forEach(child => {
                     if (typeof child === 'string') {
                         element.appendChild(document.createTextNode(child));
@@ -25,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return element;
             },
             
+       
             debounce(func, wait) {
                 let timeout;
                 return function executedFunction(...args) {
@@ -37,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
             },
             
+       
             getFromStorage(key) {
                 try {
                     return JSON.parse(localStorage.getItem(key)) || [];
@@ -46,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             },
             
+           
             saveToStorage(key, data) {
                 try {
                     localStorage.setItem(key, JSON.stringify(data));
@@ -55,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
+    
         const ApiService = {
             async fetchUsers() {
                 try {
@@ -101,113 +106,139 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
-        const Components = {
-    Breadcrumbs(currentRoute) {
-        const routes = [
-            { path: '#users', name: 'Пользователи' },
-            { path: '#users#todos', name: 'Задачи' },
-            { path: '#users#posts', name: 'Посты' },
-            { path: '#users#posts#comments', name: 'Комментарии' }
-        ];
-        
-        const breadcrumbsContainer = Utils.createElement('div', { className: 'breadcrumbs' });
-        
-        const homeLink = Utils.createElement('a', { href: '#users' }, ['Главная']);
-        breadcrumbsContainer.appendChild(homeLink);
-        
-        routes.forEach(route => {
-            if (currentRoute.includes(route.path.replace('#', ''))) {
-                const separator = Utils.createElement('span', {}, [' / ']);
-                const link = Utils.createElement('a', { href: route.path }, [route.name]);
-                
-                breadcrumbsContainer.appendChild(separator);
-                breadcrumbsContainer.appendChild(link);
-            }
-        });
-        
-        return breadcrumbsContainer;
-    },
-
-     Header(currentRoute) {
-        const header = Utils.createElement('header');
-        const container = Utils.createElement('div', { className: 'container header-content' });
-        
-        const logo = Utils.createElement('div', { className: 'logo' }, ['SPA App']);
-        
-        const nav = Utils.createElement('nav');
-        const navList = Utils.createElement('ul');
-        
-        const routes = [
-            { path: '#users', name: 'Пользователи' },
-            { path: '#users#todos', name: 'Задачи' },
-            { path: '#users#posts', name: 'Посты' },
-            { path: '#users#posts#comments', name: 'Комментарии' }
-        ];
-        
-        routes.forEach(route => {
-            const li = Utils.createElement('li');
-            const a = Utils.createElement('a', { 
-                href: route.path,
-                className: currentRoute === route.path ? 'active' : ''
-            }, [route.name]);
-            
-            li.appendChild(a);
-            navList.appendChild(li);
-        });
-        
-        nav.appendChild(navList);
-        container.appendChild(logo);
-        container.appendChild(nav);
-        header.appendChild(container);
-        
-        return header;
-    },
-
-    Footer() {
-        return Utils.createElement('footer', { className: 'container' }, [
-            Utils.createElement('p', {}, ['© 2025 SPA App. Все права защищены.'])
-        ]);
-    },
-
-    LoadingState() {
-        return Utils.createElement('div', { className: 'loading' }, ['Загрузка...']);
-    },
-    
-    ErrorState(message) {
-        return Utils.createElement('div', { className: 'error' }, [message]);
-    },
-
-    SearchInput(onSearch) {
-        const debouncedSearch = Utils.debounce(onSearch, 300);
-        
-        return Utils.createElement('div', { className: 'search-container' }, [
-            Utils.createElement('input', {
-                type: 'text',
-                className: 'search-input',
-                placeholder: 'Поиск...',
-                onInput: (e) => debouncedSearch(e.target.value)
-            })
-        ]);
-    },
-
-     AddUserForm(onAddUser) {
-        const form = Utils.createElement('form', { className: 'add-form' });
-        
-        const title = Utils.createElement('h3', {}, ['Добавить пользователя']);
-        
-        const nameGroup = Utils.createElement('div', { className: 'form-group' }, [
-            Utils.createElement('label', { for: 'user-name' }, ['Имя']),
-            Utils.createElement('input', { 
-                type: 'text', 
-                id: 'user-name',
-                required: true 
-            })
-        ]);
-        },
-
-                    UserList(users, searchQuery, onDeleteUser) {
-                const container = Utils.createElement('div');
      
+        const Components = {
+       
+            Breadcrumbs(currentRoute) {
+                const routes = [
+                    { path: '#users', name: 'Пользователи' },
+                    { path: '#users#todos', name: 'Задачи' },
+                    { path: '#users#posts', name: 'Посты' },
+                    { path: '#users#posts#comments', name: 'Комментарии' }
+                ];
+                
+                const breadcrumbsContainer = Utils.createElement('div', { className: 'breadcrumbs' });
+                
+           
+                const homeLink = Utils.createElement('a', { href: '#users' }, ['Главная']);
+                breadcrumbsContainer.appendChild(homeLink);
+                
+               
+                routes.forEach(route => {
+                    if (currentRoute.includes(route.path.replace('#', ''))) {
+                        const separator = Utils.createElement('span', {}, [' / ']);
+                        const link = Utils.createElement('a', { href: route.path }, [route.name]);
+                        
+                        breadcrumbsContainer.appendChild(separator);
+                        breadcrumbsContainer.appendChild(link);
+                    }
+                });
+                
+                return breadcrumbsContainer;
+            },
+            
+    
+            SearchInput(onSearch) {
+                const debouncedSearch = Utils.debounce(onSearch, 300);
+                
+                return Utils.createElement('div', { className: 'search-container' }, [
+                    Utils.createElement('input', {
+                        type: 'text',
+                        className: 'search-input',
+                        placeholder: 'Поиск...',
+                        onInput: (e) => debouncedSearch(e.target.value)
+                    })
+                ]);
+            },
+            
+        
+            Header(currentRoute) {
+                const header = Utils.createElement('header');
+                const container = Utils.createElement('div', { className: 'container header-content' });
+                
+                const logo = Utils.createElement('div', { className: 'logo' }, ['SPA App']);
+                
+                const nav = Utils.createElement('nav');
+                const navList = Utils.createElement('ul');
+                
+                const routes = [
+                    { path: '#users', name: 'Пользователи' },
+                    { path: '#users#todos', name: 'Задачи' },
+                    { path: '#users#posts', name: 'Посты' },
+                    { path: '#users#posts#comments', name: 'Комментарии' }
+                ];
+                
+                routes.forEach(route => {
+                    const li = Utils.createElement('li');
+                    const a = Utils.createElement('a', { 
+                        href: route.path,
+                        className: currentRoute === route.path ? 'active' : ''
+                    }, [route.name]);
+                    
+                    li.appendChild(a);
+                    navList.appendChild(li);
+                });
+                
+                nav.appendChild(navList);
+                container.appendChild(logo);
+                container.appendChild(nav);
+                header.appendChild(container);
+                
+                return header;
+            },
+            
+      
+            AddUserForm(onAddUser) {
+                const form = Utils.createElement('form', { className: 'add-form' });
+                
+                const title = Utils.createElement('h3', {}, ['Добавить пользователя']);
+                
+                const nameGroup = Utils.createElement('div', { className: 'form-group' }, [
+                    Utils.createElement('label', { for: 'user-name' }, ['Имя']),
+                    Utils.createElement('input', { 
+                        type: 'text', 
+                        id: 'user-name',
+                        required: true 
+                    })
+                ]);
+                
+                const emailGroup = Utils.createElement('div', { className: 'form-group' }, [
+                    Utils.createElement('label', { for: 'user-email' }, ['Email']),
+                    Utils.createElement('input', { 
+                        type: 'email', 
+                        id: 'user-email',
+                        required: true 
+                    })
+                ]);
+                
+                const submitBtn = Utils.createElement('button', { 
+                    type: 'submit',
+                    className: 'btn btn-success'
+                }, ['Добавить пользователя']);
+                
+                form.appendChild(title);
+                form.appendChild(nameGroup);
+                form.appendChild(emailGroup);
+                form.appendChild(submitBtn);
+                
+                form.onsubmit = (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('user-name').value;
+                    const email = document.getElementById('user-email').value;
+                    
+                    if (name && email) {
+                        onAddUser({ name, email });
+                        form.reset();
+                    }
+                };
+                
+                return form;
+            },
+            
+
+            UserList(users, searchQuery, onDeleteUser) {
+                const container = Utils.createElement('div');
+          
                 const filteredUsers = users.filter(user => 
                     user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                     user.email.toLowerCase().includes(searchQuery.toLowerCase())
@@ -223,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 
                 filteredUsers.forEach(user => {
-                    const isCustomUser = user.id < 0;
+                    const isCustomUser = user.id < 0; 
                     
                     const card = Utils.createElement('div', { className: 'card user-card' }, [
                         Utils.createElement('h3', {}, [user.name]),
@@ -234,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         ])
                     ]);
                     
-        
+                   
                     if (isCustomUser) {
                         const actionButtons = Utils.createElement('div', { className: 'action-buttons' });
                         const deleteBtn = Utils.createElement('button', { 
@@ -255,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
             TodoList(todos, searchQuery) {
                 const container = Utils.createElement('div');
                 
-
+     
                 const filteredTodos = todos.filter(todo => 
                     todo.title.toLowerCase().includes(searchQuery.toLowerCase())
                 );
@@ -289,7 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
             PostList(posts, searchQuery) {
                 const container = Utils.createElement('div');
                 
-       
+        
                 const filteredPosts = posts.filter(post => 
                     post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                     post.body.toLowerCase().includes(searchQuery.toLowerCase())
@@ -321,7 +352,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             CommentList(comments, searchQuery) {
                 const container = Utils.createElement('div');
-        
+                
+          
                 const filteredComments = comments.filter(comment => 
                     comment.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                     comment.body.toLowerCase().includes(searchQuery.toLowerCase())
@@ -351,17 +383,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 return container;
             },
-
-             LoadingState() {
+            
+     
+            LoadingState() {
                 return Utils.createElement('div', { className: 'loading' }, ['Загрузка...']);
             },
             
-       
+          
             ErrorState(message) {
                 return Utils.createElement('div', { className: 'error' }, [message]);
             },
-            
-        
+ 
             Footer() {
                 return Utils.createElement('footer', { className: 'container' }, [
                     Utils.createElement('p', {}, ['© 2025 SPA App. Все права защищены.'])
@@ -369,7 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
-
+     
         class App {
             constructor() {
                 this.state = {
@@ -396,10 +428,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             setupEventListeners() {
-         
+ 
                 window.addEventListener('hashchange', () => {
                     this.state.currentRoute = window.location.hash;
-                    this.state.searchQuery = '';
+                    this.state.searchQuery = ''; 
                     this.render();
                 });
             }
@@ -409,7 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.render();
                 
                 try {
-                
+            
                     const [apiUsers, apiTodos, apiPosts, apiComments] = await Promise.all([
                         ApiService.fetchUsers(),
                         ApiService.fetchTodos(),
@@ -417,7 +449,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         ApiService.fetchComments()
                     ]);
                     
-               
+                 
                     this.state.users = [...apiUsers, ...this.customUsers];
                     this.state.todos = [...apiTodos, ...this.customTodos];
                     this.state.posts = apiPosts;
@@ -437,7 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             addUser(userData) {
-           
+             
                 const newUser = {
                     id: -Date.now(),
                     ...userData,
@@ -447,8 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 this.customUsers.push(newUser);
                 Utils.saveToStorage('customUsers', this.customUsers);
-                
-             
+              
                 this.state.users = [...this.state.users, newUser];
                 this.render();
             }
@@ -458,10 +489,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.customUsers = this.customUsers.filter(user => user.id !== userId);
                 Utils.saveToStorage('customUsers', this.customUsers);
                 
-        
+       
                 this.customTodos = this.customTodos.filter(todo => todo.userId !== userId);
                 Utils.saveToStorage('customTodos', this.customTodos);
-       
+                
+            
                 this.state.users = this.state.users.filter(user => user.id !== userId);
                 this.state.todos = this.state.todos.filter(todo => todo.userId !== userId);
                 this.render();
@@ -471,20 +503,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 const app = document.getElementById('app');
                 app.innerHTML = '';
                 
-                // Рендерим заголовок
+            
                 app.appendChild(Components.Header(this.state.currentRoute));
                 
                 const container = Utils.createElement('div', { className: 'container' });
-                
-              
+           
                 container.appendChild(Components.Breadcrumbs(this.state.currentRoute));
                 
-             
+               
                 if (this.state.currentRoute.includes('#users')) {
                     container.appendChild(Components.SearchInput((query) => this.handleSearch(query)));
                 }
                 
-          
+            
                 if (this.state.loading) {
                     container.appendChild(Components.LoadingState());
                     app.appendChild(container);
@@ -497,12 +528,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
                 
-
+          
                 switch (this.state.currentRoute) {
                     case '#users':
-                        
+          
                         container.appendChild(Components.AddUserForm((user) => this.addUser(user)));
-                
+                  
                         container.appendChild(Components.UserList(
                             this.state.users, 
                             this.state.searchQuery,
@@ -532,18 +563,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         break;
                         
                     default:
-                      
+                  
                         window.location.hash = '#users';
                         break;
                 }
                 
                 app.appendChild(container);
                 
-            
+
                 app.appendChild(Components.Footer());
             }
         }
-
 
         document.addEventListener('DOMContentLoaded', () => {
             new App();
