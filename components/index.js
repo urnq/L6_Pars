@@ -350,5 +350,201 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 
                 return container;
+            },
+
+             LoadingState() {
+                return Utils.createElement('div', { className: 'loading' }, ['Загрузка...']);
+            },
+            
+       
+            ErrorState(message) {
+                return Utils.createElement('div', { className: 'error' }, [message]);
+            },
+            
+        
+            Footer() {
+                return Utils.createElement('footer', { className: 'container' }, [
+                    Utils.createElement('p', {}, ['© 2025 SPA App. Все права защищены.'])
+                ]);
             }
-};
+        };
+
+
+        class App {
+            constructor() {
+                this.state = {
+                    currentRoute: window.location.hash || '#users',
+                    users: [],
+                    todos: [],
+                    posts: [],
+                    comments: [],
+                    searchQuery: '',
+                    loading: false,
+                    error: null
+                };
+                
+                this.customUsers = Utils.getFromStorage('customUsers');
+                this.customTodos = Utils.getFromStorage('customTodos');
+                
+                this.init();
+            }
+            
+            async init() {
+                this.setupEventListeners();
+                await this.loadData();
+                this.render();
+            }
+            
+            setupEventListeners() {
+         
+                window.addEventListener('hashchange', () => {
+                    this.state.currentRoute = window.location.hash;
+                    this.state.searchQuery = '';
+                    this.render();
+                });
+            }
+            
+            async loadData() {
+                this.state.loading = true;
+                this.render();
+                
+                try {
+                
+                    const [apiUsers, apiTodos, apiPosts, apiComments] = await Promise.all([
+                        ApiService.fetchUsers(),
+                        ApiService.fetchTodos(),
+                        ApiService.fetchPosts(),
+                        ApiService.fetchComments()
+                    ]);
+                    
+               
+                    this.state.users = [...apiUsers, ...this.customUsers];
+                    this.state.todos = [...apiTodos, ...this.customTodos];
+                    this.state.posts = apiPosts;
+                    this.state.comments = apiComments;
+                    
+                    this.state.loading = false;
+                    this.state.error = null;
+                } catch (error) {
+                    this.state.loading = false;
+                    this.state.error = 'Ошибка загрузки данных. Пожалуйста, попробуйте позже.';
+                }
+            }
+            
+            handleSearch(query) {
+                this.state.searchQuery = query;
+                this.render();
+            }
+            
+            addUser(userData) {
+           
+                const newUser = {
+                    id: -Date.now(),
+                    ...userData,
+                    address: { city: 'Не указан' },
+                    phone: 'Не указан'
+                };
+                
+                this.customUsers.push(newUser);
+                Utils.saveToStorage('customUsers', this.customUsers);
+                
+             
+                this.state.users = [...this.state.users, newUser];
+                this.render();
+            }
+            
+            deleteUser(userId) {
+            
+                this.customUsers = this.customUsers.filter(user => user.id !== userId);
+                Utils.saveToStorage('customUsers', this.customUsers);
+                
+        
+                this.customTodos = this.customTodos.filter(todo => todo.userId !== userId);
+                Utils.saveToStorage('customTodos', this.customTodos);
+       
+                this.state.users = this.state.users.filter(user => user.id !== userId);
+                this.state.todos = this.state.todos.filter(todo => todo.userId !== userId);
+                this.render();
+            }
+            
+            render() {
+                const app = document.getElementById('app');
+                app.innerHTML = '';
+                
+                // Рендерим заголовок
+                app.appendChild(Components.Header(this.state.currentRoute));
+                
+                const container = Utils.createElement('div', { className: 'container' });
+                
+              
+                container.appendChild(Components.Breadcrumbs(this.state.currentRoute));
+                
+             
+                if (this.state.currentRoute.includes('#users')) {
+                    container.appendChild(Components.SearchInput((query) => this.handleSearch(query)));
+                }
+                
+          
+                if (this.state.loading) {
+                    container.appendChild(Components.LoadingState());
+                    app.appendChild(container);
+                    return;
+                }
+                
+                if (this.state.error) {
+                    container.appendChild(Components.ErrorState(this.state.error));
+                    app.appendChild(container);
+                    return;
+                }
+                
+
+                switch (this.state.currentRoute) {
+                    case '#users':
+                        
+                        container.appendChild(Components.AddUserForm((user) => this.addUser(user)));
+                
+                        container.appendChild(Components.UserList(
+                            this.state.users, 
+                            this.state.searchQuery,
+                            (userId) => this.deleteUser(userId)
+                        ));
+                        break;
+                        
+                    case '#users#todos':
+                        container.appendChild(Components.TodoList(
+                            this.state.todos, 
+                            this.state.searchQuery
+                        ));
+                        break;
+                        
+                    case '#users#posts':
+                        container.appendChild(Components.PostList(
+                            this.state.posts, 
+                            this.state.searchQuery
+                        ));
+                        break;
+                        
+                    case '#users#posts#comments':
+                        container.appendChild(Components.CommentList(
+                            this.state.comments, 
+                            this.state.searchQuery
+                        ));
+                        break;
+                        
+                    default:
+                      
+                        window.location.hash = '#users';
+                        break;
+                }
+                
+                app.appendChild(container);
+                
+            
+                app.appendChild(Components.Footer());
+            }
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new App();
+        });
