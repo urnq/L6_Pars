@@ -207,8 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     UserList(users, searchQuery, onDeleteUser) {
                 const container = Utils.createElement('div');
-                
-                // Фильтрация пользователей по поисковому запросу
+     
                 const filteredUsers = users.filter(user => 
                     user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                     user.email.toLowerCase().includes(searchQuery.toLowerCase())
@@ -224,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 
                 filteredUsers.forEach(user => {
-                    const isCustomUser = user.id < 0; // Кастомные пользователи имеют отрицательные ID
+                    const isCustomUser = user.id < 0;
                     
                     const card = Utils.createElement('div', { className: 'card user-card' }, [
                         Utils.createElement('h3', {}, [user.name]),
@@ -235,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         ])
                     ]);
                     
-                    // Добавляем кнопки действий только для кастомных пользователей
+        
                     if (isCustomUser) {
                         const actionButtons = Utils.createElement('div', { className: 'action-buttons' });
                         const deleteBtn = Utils.createElement('button', { 
@@ -256,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
             TodoList(todos, searchQuery) {
                 const container = Utils.createElement('div');
                 
-                // Фильтрация задач по поисковому запросу
+
                 const filteredTodos = todos.filter(todo => 
                     todo.title.toLowerCase().includes(searchQuery.toLowerCase())
                 );
@@ -278,6 +277,72 @@ document.addEventListener('DOMContentLoaded', () => {
                                 `Статус: ${todo.completed ? 'Выполнено' : 'Не выполнено'}`
                             ]),
                             Utils.createElement('p', {}, [`Пользователь ID: ${todo.userId}`])
+                        ])
+                    ]);
+                    
+                    container.appendChild(card);
+                });
+                
+                return container;
+            },
+            
+            PostList(posts, searchQuery) {
+                const container = Utils.createElement('div');
+                
+       
+                const filteredPosts = posts.filter(post => 
+                    post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    post.body.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+                
+                if (filteredPosts.length === 0) {
+                    const emptyState = Utils.createElement('div', { className: 'empty-state' }, [
+                        Utils.createElement('h3', {}, ['Посты не найдены']),
+                        Utils.createElement('p', {}, ['Попробуйте изменить поисковый запрос'])
+                    ]);
+                    container.appendChild(emptyState);
+                    return container;
+                }
+                
+                filteredPosts.forEach(post => {
+                    const card = Utils.createElement('div', { className: 'card post-card' }, [
+                        Utils.createElement('h3', {}, [post.title]),
+                        Utils.createElement('p', {}, [post.body]),
+                        Utils.createElement('div', { className: 'meta' }, [
+                            Utils.createElement('p', {}, [`Пользователь ID: ${post.userId}`])
+                        ])
+                    ]);
+                    
+                    container.appendChild(card);
+                });
+                
+                return container;
+            },
+            
+            CommentList(comments, searchQuery) {
+                const container = Utils.createElement('div');
+        
+                const filteredComments = comments.filter(comment => 
+                    comment.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    comment.body.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+                
+                if (filteredComments.length === 0) {
+                    const emptyState = Utils.createElement('div', { className: 'empty-state' }, [
+                        Utils.createElement('h3', {}, ['Комментарии не найдены']),
+                        Utils.createElement('p', {}, ['Попробуйте изменить поисковый запрос'])
+                    ]);
+                    container.appendChild(emptyState);
+                    return container;
+                }
+                
+                filteredComments.forEach(comment => {
+                    const card = Utils.createElement('div', { className: 'card comment-card' }, [
+                        Utils.createElement('h3', {}, [comment.name]),
+                        Utils.createElement('p', {}, [comment.body]),
+                        Utils.createElement('div', { className: 'meta' }, [
+                            Utils.createElement('p', {}, [`Email: ${comment.email}`]),
+                            Utils.createElement('p', {}, [`Пост ID: ${comment.postId}`])
                         ])
                     ]);
                     
