@@ -14,7 +14,7 @@ const Utils = {
         children.forEach(child => {
             if (typeof child === 'string') {
                 element.appendChild(document.createTextNode(child));
-            } else {
+            } else if (child instanceof Node) {
                 element.appendChild(child);
             }
         });
@@ -99,132 +99,6 @@ const ApiService = {
 };
 
 const Components = {
-    AddTodoForm(onAddTodo, users) {
-        const form = Utils.createElement('form', { className: 'add-form' });
-
-        const title = Utils.createElement('h3', {}, ['Добавить задачу']);
-
-        const titleGroup = Utils.createElement('div', { className: 'form-group' }, [
-            Utils.createElement('label', { for: 'todo-title' }, ['Название задачи']),
-            Utils.createElement('input', {
-                type: 'text',
-                id: 'todo-title',
-                required: true,
-                placeholder: 'Введите название задачи...'
-            })
-        ]);
-
-        // Создаем опции пользователей до добавления в DOM
-        const userOptions = [
-            Utils.createElement('option', { value: '' }, ['Выберите пользователя'])
-        ];
-        
-        users.forEach(user => {
-            const option = Utils.createElement('option', { 
-                value: user.id 
-            }, [`${user.name} (${user.email})`]);
-            userOptions.push(option);
-        });
-
-        const userGroup = Utils.createElement('div', { className: 'form-group' }, [
-            Utils.createElement('label', { for: 'todo-user' }, ['Пользователь']),
-            Utils.createElement('select', {
-                id: 'todo-user',
-                required: true
-            }, userOptions)
-        ]);
-
-        const completedGroup = Utils.createElement('div', { className: 'form-group' }, [
-            Utils.createElement('label', { 
-                style: 'display: flex; align-items: center; cursor: pointer;'
-            }, [
-                Utils.createElement('input', {
-                    type: 'checkbox',
-                    id: 'todo-completed',
-                    style: 'width: auto; margin-right: 8px;'
-                }),
-                ' Выполнена'
-            ])
-        ]);
-
-        const submitBtn = Utils.createElement('button', {
-            type: 'submit',
-            className: 'btn btn-success'
-        }, ['Добавить задачу']);
-
-        form.appendChild(title);
-        form.appendChild(titleGroup);
-        form.appendChild(userGroup);
-        form.appendChild(completedGroup);
-        form.appendChild(submitBtn);
-
-        form.onsubmit = (e) => {
-            e.preventDefault();
-            const titleInput = form.querySelector('#todo-title');
-            const userSelect = form.querySelector('#todo-user');
-            const completedCheckbox = form.querySelector('#todo-completed');
-            
-            const title = titleInput.value;
-            const userId = parseInt(userSelect.value);
-            const completed = completedCheckbox.checked;
-
-            if (title && userId) {
-                onAddTodo({ title, userId, completed });
-                form.reset();
-            }
-        };
-
-        return form;
-    },
-
-    // ОДИН компонент TodoList с поддержкой удаления
-    TodoList(todos, searchQuery, onDeleteTodo) {
-        const container = Utils.createElement('div');
-
-        const filteredTodos = todos.filter(todo =>
-            todo.title.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-
-        if (filteredTodos.length === 0) {
-            const emptyState = Utils.createElement('div', { className: 'empty-state' }, [
-                Utils.createElement('h3', {}, ['Задачи не найдены']),
-                Utils.createElement('p', {}, ['Попробуйте изменить поисковый запрос'])
-            ]);
-            container.appendChild(emptyState);
-            return container;
-        }
-
-        filteredTodos.forEach(todo => {
-            const isCustomTodo = todo.id < 0;
-
-            const card = Utils.createElement('div', { className: 'card todo-card' }, [
-                Utils.createElement('h3', {}, [todo.title]),
-                Utils.createElement('div', { className: 'meta' }, [
-                    Utils.createElement('p', {}, [
-                        `Статус: ${todo.completed ? 'Выполнено' : 'Не выполнено'}`
-                    ]),
-                    Utils.createElement('p', {}, [`Пользователь ID: ${todo.userId}`])
-                ])
-            ]);
-
-            // Добавляем кнопку удаления для кастомных задач
-            if (isCustomTodo) {
-                const actionButtons = Utils.createElement('div', { className: 'action-buttons' });
-                const deleteBtn = Utils.createElement('button', {
-                    className: 'btn btn-danger',
-                    onClick: () => onDeleteTodo(todo.id)
-                }, ['Удалить']);
-
-                actionButtons.appendChild(deleteBtn);
-                card.appendChild(actionButtons);
-            }
-
-            container.appendChild(card);
-        });
-
-        return container;
-    },
-
     Breadcrumbs(currentRoute) {
         const routes = [
             { path: '#users', name: 'Пользователи' },
@@ -348,6 +222,88 @@ const Components = {
         return form;
     },
 
+    AddTodoForm(onAddTodo, users) {
+        const form = Utils.createElement('form', { className: 'add-form' });
+
+        const title = Utils.createElement('h3', {}, ['Добавить задачу']);
+
+        const titleGroup = Utils.createElement('div', { className: 'form-group' }, [
+            Utils.createElement('label', { for: 'todo-title' }, ['Название задачи']),
+            Utils.createElement('input', {
+                type: 'text',
+                id: 'todo-title',
+                required: true,
+                placeholder: 'Введите название задачи...'
+            })
+        ]);
+
+        const userSelect = Utils.createElement('select', {
+            id: 'todo-user',
+            required: true
+        });
+        
+        const defaultOption = Utils.createElement('option', { value: '' }, ['Выберите пользователя']);
+        userSelect.appendChild(defaultOption);
+        
+        users.forEach(user => {
+            const option = Utils.createElement('option', { 
+                value: user.id 
+            }, [`${user.name} (${user.email})`]);
+            userSelect.appendChild(option);
+        });
+
+        const userGroup = Utils.createElement('div', { className: 'form-group' }, [
+            Utils.createElement('label', { for: 'todo-user' }, ['Пользователь']),
+            userSelect
+        ]);
+
+        const completedLabel = Utils.createElement('label', { 
+            style: 'display: flex; align-items: center; cursor: pointer;'
+        });
+        
+        const checkbox = Utils.createElement('input', {
+            type: 'checkbox',
+            id: 'todo-completed',
+            style: 'width: auto; margin-right: 8px;'
+        });
+        
+        completedLabel.appendChild(checkbox);
+        completedLabel.appendChild(document.createTextNode(' Выполнена'));
+
+        const completedGroup = Utils.createElement('div', { className: 'form-group' }, [
+            completedLabel
+        ]);
+
+        const submitBtn = Utils.createElement('button', {
+            type: 'submit',
+            className: 'btn btn-success'
+        }, ['Добавить задачу']);
+
+        form.appendChild(title);
+        form.appendChild(titleGroup);
+        form.appendChild(userGroup);
+        form.appendChild(completedGroup);
+        form.appendChild(submitBtn);
+
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            const titleInput = form.querySelector('#todo-title');
+            const userSelect = form.querySelector('#todo-user');
+            const completedCheckbox = form.querySelector('#todo-completed');
+            
+            const title = titleInput.value;
+            const userId = parseInt(userSelect.value);
+            const completed = completedCheckbox.checked;
+
+            if (title && userId) {
+                onAddTodo({ title, userId, completed });
+                form.reset();
+            }
+        };
+
+        return form;
+    },
+
     UserList(users, searchQuery, onDeleteUser) {
         const container = Utils.createElement('div');
 
@@ -382,6 +338,52 @@ const Components = {
                 const deleteBtn = Utils.createElement('button', {
                     className: 'btn btn-danger',
                     onClick: () => onDeleteUser(user.id)
+                }, ['Удалить']);
+
+                actionButtons.appendChild(deleteBtn);
+                card.appendChild(actionButtons);
+            }
+
+            container.appendChild(card);
+        });
+
+        return container;
+    },
+
+    TodoList(todos, searchQuery, onDeleteTodo) {
+        const container = Utils.createElement('div');
+
+        const filteredTodos = todos.filter(todo =>
+            todo.title.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+
+        if (filteredTodos.length === 0) {
+            const emptyState = Utils.createElement('div', { className: 'empty-state' }, [
+                Utils.createElement('h3', {}, ['Задачи не найдены']),
+                Utils.createElement('p', {}, ['Попробуйте изменить поисковый запрос'])
+            ]);
+            container.appendChild(emptyState);
+            return container;
+        }
+
+        filteredTodos.forEach(todo => {
+            const isCustomTodo = todo.id < 0;
+
+            const card = Utils.createElement('div', { className: 'card todo-card' }, [
+                Utils.createElement('h3', {}, [todo.title]),
+                Utils.createElement('div', { className: 'meta' }, [
+                    Utils.createElement('p', {}, [
+                        `Статус: ${todo.completed ? 'Выполнено' : 'Не выполнено'}`
+                    ]),
+                    Utils.createElement('p', {}, [`Пользователь ID: ${todo.userId}`])
+                ])
+            ]);
+
+            if (isCustomTodo) {
+                const actionButtons = Utils.createElement('div', { className: 'action-buttons' });
+                const deleteBtn = Utils.createElement('button', {
+                    className: 'btn btn-danger',
+                    onClick: () => onDeleteTodo(todo.id)
                 }, ['Удалить']);
 
                 actionButtons.appendChild(deleteBtn);
