@@ -142,7 +142,7 @@ const Components = {
         const header = Utils.createElement('header');
         const container = Utils.createElement('div', { className: 'container header-content' });
 
-        const logo = Utils.createElement('div', { className: 'logo' }, ['SPA App']);
+        const logo = Utils.createElement('div', { className: 'logo' }, ['Сказка о трех медведях']);
 
         const nav = Utils.createElement('nav');
         const navList = Utils.createElement('ul');
