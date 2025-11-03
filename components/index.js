@@ -1,19 +1,15 @@
 const Utils = {
-
     createElement(tag, attributes = {}, children = []) {
         const element = document.createElement(tag);
 
-
         Object.keys(attributes).forEach(key => {
             if (key.startsWith('on') && typeof attributes[key] === 'function') {
-
                 const eventName = key.slice(2).toLowerCase();
                 element.addEventListener(eventName, attributes[key]);
             } else {
                 element.setAttribute(key, attributes[key]);
             }
         });
-
 
         children.forEach(child => {
             if (typeof child === 'string') {
@@ -25,7 +21,6 @@ const Utils = {
 
         return element;
     },
-
 
     debounce(func, wait) {
         let timeout;
@@ -39,7 +34,6 @@ const Utils = {
         };
     },
 
-
     getFromStorage(key) {
         try {
             return JSON.parse(localStorage.getItem(key)) || [];
@@ -49,7 +43,6 @@ const Utils = {
         }
     },
 
-
     saveToStorage(key, data) {
         try {
             localStorage.setItem(key, JSON.stringify(data));
@@ -58,7 +51,6 @@ const Utils = {
         }
     }
 };
-
 
 const ApiService = {
     async fetchUsers() {
@@ -106,9 +98,7 @@ const ApiService = {
     }
 };
 
-
 const Components = {
-
     AddTodoForm(onAddTodo, users) {
         const form = Utils.createElement('form', { className: 'add-form' });
 
@@ -124,23 +114,35 @@ const Components = {
             })
         ]);
 
+        // Создаем опции пользователей до добавления в DOM
+        const userOptions = [
+            Utils.createElement('option', { value: '' }, ['Выберите пользователя'])
+        ];
+        
+        users.forEach(user => {
+            const option = Utils.createElement('option', { 
+                value: user.id 
+            }, [`${user.name} (${user.email})`]);
+            userOptions.push(option);
+        });
+
         const userGroup = Utils.createElement('div', { className: 'form-group' }, [
             Utils.createElement('label', { for: 'todo-user' }, ['Пользователь']),
             Utils.createElement('select', {
                 id: 'todo-user',
                 required: true
-            })
+            }, userOptions)
         ]);
 
         const completedGroup = Utils.createElement('div', { className: 'form-group' }, [
-            Utils.createElement('label', {
+            Utils.createElement('label', { 
                 style: 'display: flex; align-items: center; cursor: pointer;'
             }, [
                 Utils.createElement('input', {
                     type: 'checkbox',
                     id: 'todo-completed',
                     style: 'width: auto; margin-right: 8px;'
-                }, []),
+                }),
                 ' Выполнена'
             ])
         ]);
@@ -156,22 +158,15 @@ const Components = {
         form.appendChild(completedGroup);
         form.appendChild(submitBtn);
 
-        const userSelect = document.getElementById('todo-user');
-        const defaultOption = Utils.createElement('option', { value: '' }, ['Выберите пользователя']);
-        userSelect.appendChild(defaultOption);
-
-        users.forEach(user => {
-            const option = Utils.createElement('option', {
-                value: user.id
-            }, [`${user.name} (${user.email})`]);
-            userSelect.appendChild(option);
-        });
-
         form.onsubmit = (e) => {
             e.preventDefault();
-            const title = document.getElementById('todo-title').value;
-            const userId = parseInt(document.getElementById('todo-user').value);
-            const completed = document.getElementById('todo-completed').checked;
+            const titleInput = form.querySelector('#todo-title');
+            const userSelect = form.querySelector('#todo-user');
+            const completedCheckbox = form.querySelector('#todo-completed');
+            
+            const title = titleInput.value;
+            const userId = parseInt(userSelect.value);
+            const completed = completedCheckbox.checked;
 
             if (title && userId) {
                 onAddTodo({ title, userId, completed });
@@ -182,6 +177,7 @@ const Components = {
         return form;
     },
 
+    // ОДИН компонент TodoList с поддержкой удаления
     TodoList(todos, searchQuery, onDeleteTodo) {
         const container = Utils.createElement('div');
 
@@ -211,6 +207,7 @@ const Components = {
                 ])
             ]);
 
+            // Добавляем кнопку удаления для кастомных задач
             if (isCustomTodo) {
                 const actionButtons = Utils.createElement('div', { className: 'action-buttons' });
                 const deleteBtn = Utils.createElement('button', {
@@ -238,10 +235,8 @@ const Components = {
 
         const breadcrumbsContainer = Utils.createElement('div', { className: 'breadcrumbs' });
 
-
         const homeLink = Utils.createElement('a', { href: '#users' }, ['Главная']);
         breadcrumbsContainer.appendChild(homeLink);
-
 
         routes.forEach(route => {
             if (currentRoute.includes(route.path.replace('#', ''))) {
@@ -256,7 +251,6 @@ const Components = {
         return breadcrumbsContainer;
     },
 
-
     SearchInput(onSearch) {
         const debouncedSearch = Utils.debounce(onSearch, 300);
 
@@ -269,7 +263,6 @@ const Components = {
             })
         ]);
     },
-
 
     Header(currentRoute) {
         const header = Utils.createElement('header');
@@ -306,7 +299,6 @@ const Components = {
         return header;
     },
 
-
     AddUserForm(onAddUser) {
         const form = Utils.createElement('form', { className: 'add-form' });
 
@@ -342,8 +334,10 @@ const Components = {
 
         form.onsubmit = (e) => {
             e.preventDefault();
-            const name = document.getElementById('user-name').value;
-            const email = document.getElementById('user-email').value;
+            const nameInput = form.querySelector('#user-name');
+            const emailInput = form.querySelector('#user-email');
+            const name = nameInput.value;
+            const email = emailInput.value;
 
             if (name && email) {
                 onAddUser({ name, email });
@@ -353,7 +347,6 @@ const Components = {
 
         return form;
     },
-
 
     UserList(users, searchQuery, onDeleteUser) {
         const container = Utils.createElement('div');
@@ -384,7 +377,6 @@ const Components = {
                 ])
             ]);
 
-
             if (isCustomUser) {
                 const actionButtons = Utils.createElement('div', { className: 'action-buttons' });
                 const deleteBtn = Utils.createElement('button', {
@@ -402,43 +394,8 @@ const Components = {
         return container;
     },
 
-    TodoList(todos, searchQuery) {
-        const container = Utils.createElement('div');
-
-
-        const filteredTodos = todos.filter(todo =>
-            todo.title.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-
-        if (filteredTodos.length === 0) {
-            const emptyState = Utils.createElement('div', { className: 'empty-state' }, [
-                Utils.createElement('h3', {}, ['Задачи не найдены']),
-                Utils.createElement('p', {}, ['Попробуйте изменить поисковый запрос'])
-            ]);
-            container.appendChild(emptyState);
-            return container;
-        }
-
-        filteredTodos.forEach(todo => {
-            const card = Utils.createElement('div', { className: 'card todo-card' }, [
-                Utils.createElement('h3', {}, [todo.title]),
-                Utils.createElement('div', { className: 'meta' }, [
-                    Utils.createElement('p', {}, [
-                        `Статус: ${todo.completed ? 'Выполнено' : 'Не выполнено'}`
-                    ]),
-                    Utils.createElement('p', {}, [`Пользователь ID: ${todo.userId}`])
-                ])
-            ]);
-
-            container.appendChild(card);
-        });
-
-        return container;
-    },
-
     PostList(posts, searchQuery) {
         const container = Utils.createElement('div');
-
 
         const filteredPosts = posts.filter(post =>
             post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -472,7 +429,6 @@ const Components = {
     CommentList(comments, searchQuery) {
         const container = Utils.createElement('div');
 
-
         const filteredComments = comments.filter(comment =>
             comment.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             comment.body.toLowerCase().includes(searchQuery.toLowerCase())
@@ -503,11 +459,9 @@ const Components = {
         return container;
     },
 
-
     LoadingState() {
         return Utils.createElement('div', { className: 'loading' }, ['Загрузка...']);
     },
-
 
     ErrorState(message) {
         return Utils.createElement('div', { className: 'error' }, [message]);
@@ -519,7 +473,6 @@ const Components = {
         ]);
     }
 };
-
 
 class App {
     constructor() {
@@ -540,6 +493,27 @@ class App {
         this.init();
     }
 
+    addTodo(todoData) {
+        const newTodo = {
+            id: -Date.now(),
+            ...todoData
+        };
+        
+        this.customTodos.push(newTodo);
+        Utils.saveToStorage('customTodos', this.customTodos);
+        
+        this.state.todos = [...this.state.todos, newTodo];
+        this.render();
+    }
+
+    deleteTodo(todoId) {
+        this.customTodos = this.customTodos.filter(todo => todo.id !== todoId);
+        Utils.saveToStorage('customTodos', this.customTodos);
+        
+        this.state.todos = this.state.todos.filter(todo => todo.id !== todoId);
+        this.render();
+    }
+
     async init() {
         this.setupEventListeners();
         await this.loadData();
@@ -547,7 +521,6 @@ class App {
     }
 
     setupEventListeners() {
-
         window.addEventListener('hashchange', () => {
             this.state.currentRoute = window.location.hash;
             this.state.searchQuery = '';
@@ -560,14 +533,12 @@ class App {
         this.render();
 
         try {
-
             const [apiUsers, apiTodos, apiPosts, apiComments] = await Promise.all([
                 ApiService.fetchUsers(),
                 ApiService.fetchTodos(),
                 ApiService.fetchPosts(),
                 ApiService.fetchComments()
             ]);
-
 
             this.state.users = [...apiUsers, ...this.customUsers];
             this.state.todos = [...apiTodos, ...this.customTodos];
@@ -588,7 +559,6 @@ class App {
     }
 
     addUser(userData) {
-
         const newUser = {
             id: -Date.now(),
             ...userData,
@@ -604,14 +574,11 @@ class App {
     }
 
     deleteUser(userId) {
-
         this.customUsers = this.customUsers.filter(user => user.id !== userId);
         Utils.saveToStorage('customUsers', this.customUsers);
 
-
         this.customTodos = this.customTodos.filter(todo => todo.userId !== userId);
         Utils.saveToStorage('customTodos', this.customTodos);
-
 
         this.state.users = this.state.users.filter(user => user.id !== userId);
         this.state.todos = this.state.todos.filter(todo => todo.userId !== userId);
@@ -621,75 +588,71 @@ class App {
     render() {
         const app = document.getElementById('app');
         app.innerHTML = '';
-
-
+        
         app.appendChild(Components.Header(this.state.currentRoute));
-
+        
         const container = Utils.createElement('div', { className: 'container' });
-
+        
         container.appendChild(Components.Breadcrumbs(this.state.currentRoute));
-
-
+        
         if (this.state.currentRoute.includes('#users')) {
             container.appendChild(Components.SearchInput((query) => this.handleSearch(query)));
         }
-
-
+        
         if (this.state.loading) {
             container.appendChild(Components.LoadingState());
             app.appendChild(container);
             return;
         }
-
+        
         if (this.state.error) {
             container.appendChild(Components.ErrorState(this.state.error));
             app.appendChild(container);
             return;
         }
-
-
+        
         switch (this.state.currentRoute) {
             case '#users':
-
                 container.appendChild(Components.AddUserForm((user) => this.addUser(user)));
-
                 container.appendChild(Components.UserList(
-                    this.state.users,
+                    this.state.users, 
                     this.state.searchQuery,
                     (userId) => this.deleteUser(userId)
                 ));
                 break;
-
+                
             case '#users#todos':
+                container.appendChild(Components.AddTodoForm(
+                    (todo) => this.addTodo(todo),
+                    this.state.users
+                ));
                 container.appendChild(Components.TodoList(
-                    this.state.todos,
-                    this.state.searchQuery
+                    this.state.todos, 
+                    this.state.searchQuery,
+                    (todoId) => this.deleteTodo(todoId)
                 ));
                 break;
-
+                
             case '#users#posts':
                 container.appendChild(Components.PostList(
-                    this.state.posts,
+                    this.state.posts, 
                     this.state.searchQuery
                 ));
                 break;
-
+                
             case '#users#posts#comments':
                 container.appendChild(Components.CommentList(
-                    this.state.comments,
+                    this.state.comments, 
                     this.state.searchQuery
                 ));
                 break;
-
+                
             default:
-
                 window.location.hash = '#users';
                 break;
         }
-
+        
         app.appendChild(container);
-
-
         app.appendChild(Components.Footer());
     }
 }
